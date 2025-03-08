@@ -1,4 +1,5 @@
 import json
+import toml
 from enum import Enum
 
 import mcp.server.stdio
@@ -3189,6 +3190,13 @@ async def handle_call_tool(
         raise ValueError(f"Error processing alphavantage query: {str(e)}") from e
 
 
+
+def get_version():
+    with open("pyproject.toml", "r") as f:
+        pyproject = toml.load(f)
+        return pyproject["project"]["version"]
+
+
 async def main():
     # Run the server using stdin/stdout streams
     async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
@@ -3197,7 +3205,7 @@ async def main():
             write_stream,
             InitializationOptions(
                 server_name="alphavantage",
-                server_version="0.1.0",
+                server_version=get_version(),
                 capabilities=server.get_capabilities(
                     notification_options=NotificationOptions(),
                     experimental_capabilities={},
