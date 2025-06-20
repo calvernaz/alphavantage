@@ -7,7 +7,7 @@ requires-python = ">=3.12"
 dependencies = [
     "bump2version>=1.0.1",
     "load-dotenv>=0.1.0",
-    "mcp>=1.0.0",
+        "mcp>=1.0.0",
     "toml>=0.10.2",
 ]
 [[project.authors]]
