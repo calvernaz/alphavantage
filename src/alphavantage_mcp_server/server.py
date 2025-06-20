@@ -1,9 +1,9 @@
 import json
-import toml
 from enum import Enum
 
 import mcp.server.stdio
 import mcp.types as types
+import toml
 from mcp.server import NotificationOptions, Server
 from mcp.server.models import InitializationOptions
 
@@ -143,7 +143,7 @@ class AlphavantageTools(str, Enum):
     COMPANY_OVERVIEW = "company_overview"
     ETF_PROFILE = "etf_profile"
     COMPANY_DIVIDENDS = "company_dividends"
-    COMPANY_SPLITS = "company_splits"
+    COMPANY_SPLITS = "company_dividends"
     INCOME_STATEMENT = "income_statement"
     BALANCE_SHEET = "balance_sheet"
     CASH_FLOW = "cash_flow"
@@ -1150,7 +1150,7 @@ async def list_prompts() -> list[types.Prompt]:
                     name="time_period", description="Time period", required=True
                 ),
                 types.PromptArgument(
-                    name="series_type", description="Series type", required=True
+                    name="series_type", description="The desired price type in the time series. Four types are supported: close, open, high, low", required=True
                 ),
             ],
         ),
@@ -1228,7 +1228,7 @@ async def list_prompts() -> list[types.Prompt]:
                     name="time_period", description="Time period", required=True
                 ),
                 types.PromptArgument(
-                    name="series_type", description="Series type", required=True
+                    name="series_type", description="The desired price type in the time series. Four types are supported: close, open, high, low", required=True
                 ),
             ],
         ),
@@ -5139,7 +5139,8 @@ def get_version():
         return pyproject["project"]["version"]
 
 
-async def main():
+async def run_stdio_server():
+    """Run the MCP stdio server"""
     async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
         await server.run(
             read_stream,
@@ -5153,3 +5154,17 @@ async def main():
                 ),
             ),
         )
+
+
+async def run_sse_server(port):
+    pass
+
+
+async def main(server_type='stdio', port=8080):
+    """Main entry point with server type selection"""
+    if server_type == 'sse':
+        print(f"Starting SSE server on port {port}")
+        await run_sse_server(port=port)
+    else:
+        print("Starting stdio server")
+        await run_stdio_server()

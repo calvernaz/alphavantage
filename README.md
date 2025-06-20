@@ -18,6 +18,30 @@ A MCP server for the stock market data API, Alphavantage API.
 git clone https://github.com/calvernaz/alphavantage.git
 ```
 
+## Server Modes
+
+The AlphaVantage server can run in two different modes:
+
+### Stdio Server (Default)
+This is the standard MCP server mode used for tools like Claude Desktop.
+
+```bash
+alphavantage
+# or explicitly:
+alphavantage --server stdio
+```
+
+### SSE (Server-Sent Events) Server
+This mode provides real-time updates via HTTP streaming.
+
+```bash
+alphavantage --server sse --port 8080
+```
+
+Options:
+- `--server`: Choose between `stdio` (default) or `sse` server mode
+- `--port`: Specify the port for the SSE server (default: 8080)
+
 ### Usage with Claude Desktop
 Add this to your `claude_desktop_config.json`:
 
