@@ -7,8 +7,12 @@ requires-python = ">=3.12"
 dependencies = [
     "bump2version>=1.0.1",
     "load-dotenv>=0.1.0",
-    "mcp>=1.0.0",
+    "mcp>=1.9.4",
     "toml>=0.10.2",
+    "starlette>=0.27.0",
+    "uvicorn>=0.24.0",
+    "pytest-asyncio>=1.0.0",
+    "openai>=1.90.0",
 ]
 [[project.authors]]
 name = "Cesar Alvernaz"
@@ -24,7 +28,8 @@ packages = ["src/alphavantage_mcp_server"]
 
 [dependency-groups]
 dev = [
-    "pytest-asyncio>=0.26.0",
+    "pytest>=8.4.1",
+    "pytest-asyncio>=1.0.0",
     "ruff>=0.9.9",
 ]
 

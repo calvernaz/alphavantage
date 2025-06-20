@@ -1,11 +1,14 @@
+import asyncio
 import json
-import toml
 from enum import Enum
 
 import mcp.server.stdio
 import mcp.types as types
+import toml
+import uvicorn
 from mcp.server import NotificationOptions, Server
 from mcp.server.models import InitializationOptions
+from mcp.server.streamable_http import StreamableHTTPServerTransport
 
 from alphavantage_mcp_server.api import (
     fetch_quote,
@@ -143,7 +146,7 @@ class AlphavantageTools(str, Enum):
     COMPANY_OVERVIEW = "company_overview"
     ETF_PROFILE = "etf_profile"
     COMPANY_DIVIDENDS = "company_dividends"
-    COMPANY_SPLITS = "company_splits"
+    COMPANY_SPLITS = "company_dividends"
     INCOME_STATEMENT = "income_statement"
     BALANCE_SHEET = "balance_sheet"
     CASH_FLOW = "cash_flow"
@@ -1150,7 +1153,7 @@ async def list_prompts() -> list[types.Prompt]:
                     name="time_period", description="Time period", required=True
                 ),
                 types.PromptArgument(
-                    name="series_type", description="Series type", required=True
+                    name="series_type", description="The desired price type in the time series. Four types are supported: close, open, high, low", required=True
                 ),
             ],
         ),
@@ -1228,7 +1231,7 @@ async def list_prompts() -> list[types.Prompt]:
                     name="time_period", description="Time period", required=True
                 ),
                 types.PromptArgument(
-                    name="series_type", description="Series type", required=True
+                    name="series_type", description="The desired price type in the time series. Four types are supported: close, open, high, low", required=True
                 ),
             ],
         ),
@@ -5139,7 +5142,8 @@ def get_version():
         return pyproject["project"]["version"]
 
 
-async def main():
+async def run_stdio_server():
+    """Run the MCP stdio server"""
     async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
         await server.run(
             read_stream,
@@ -5153,3 +5157,53 @@ async def main():
                 ),
             ),
         )
+
+
+async def run_streamable_http_server(port=8080):
+    """Run the Streamable HTTP server on the specified port"""
+    transport = StreamableHTTPServerTransport(mcp_session_id=None, is_json_response_enabled=True)
+
+    async with transport.connect() as (read_stream, write_stream):
+        server_task = asyncio.create_task(
+            server.run(
+                read_stream,
+                write_stream,
+                InitializationOptions(
+                    server_name="alphavantage",
+                    server_version=get_version(),
+                    capabilities=server.get_capabilities(
+                        notification_options=NotificationOptions(),
+                        experimental_capabilities={},
+                    ),
+                ),
+            )
+        )
+        # Create ASGI app wrapper for the transport
+        async def asgi_app(scope, receive, send):
+            if scope["type"] == "http" and scope["path"].startswith("/mcp"):
+                await transport.handle_request(scope, receive, send)
+            else:
+                await send({
+                    "type": "http.response.start",
+                    "status": 404,
+                    "headers": [[b"content-type", b"text/plain"]],
+                })
+                await send({
+                    "type": "http.response.body",
+                    "body": b"Not Found",
+                })
+        
+        config = uvicorn.Config(asgi_app, host="localhost", port=port)
+        uvicorn_server = uvicorn.Server(config)
+        http_task = asyncio.create_task(uvicorn_server.serve())
+
+        await asyncio.gather(server_task, http_task)
+
+async def main(server_type='stdio', port=8080):
+    """Main entry point with server type selection"""
+    if server_type == 'http':
+        print(f"Starting Streamable HTTP server on port {port}")
+        await run_streamable_http_server(port=port)
+    else:
+        print("Starting stdio server")
+        await run_stdio_server()
