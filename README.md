@@ -47,7 +47,7 @@ Add this to your `claude_desktop_config.json`:
 
 **NOTE** Make sure you replace the `<DIRECTORY-OF-CLONED-PROJECT>` with the directory of the cloned project.
 
-```
+```json
 {
   "mcpServers": {
     "alphavantage": {
@@ -65,6 +65,31 @@ Add this to your `claude_desktop_config.json`:
   }
 }
 ```
+### Running the Server in Streamable HTTP Mode
+
+```json
+{
+  "mcpServers": {
+    "alphavantage": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "<DIRECTORY-OF-CLONED-PROJECT>/alphavantage",
+        "run",
+        "alphavantage",
+        "--server",
+        "http",
+        "--port",
+        "8080"
+      ],
+      "env": {
+        "ALPHAVANTAGE_API_KEY": "YOUR_API_KEY_HERE"
+      }
+    }
+  }
+}
+```
+
 
 ## 📺 Demo Video
 
