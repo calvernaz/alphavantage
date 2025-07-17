@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/calvernaz-alphavantage-badge.png)](https://mseep.ai/app/calvernaz-alphavantage)
+
 # ✅ Official Alpha Vantage MCP Server
 
 [![smithery badge](https://smithery.ai/badge/@calvernaz/alphavantage)](https://smithery.ai/server/@calvernaz/alphavantage)
