@@ -765,7 +765,7 @@ async def list_prompts() -> list[types.Prompt]:
                     name="datatype", description="Data type (json or csv). Default is json", required=False
                 ),
                 types.PromptArgument(
-                    name="max_data_points", description="Maximum number of data points to fetch. Default is 1000", required=False
+                    name="max_data_points", description="Maximum number of data points to fetch. Default is 100", required=False
                 ),
             ],
         ),
