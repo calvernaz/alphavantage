@@ -1523,6 +1523,7 @@ async def fetch_sma(
     time_period: int = None,
     series_type: str = None,
     datatype: str = "json",
+    max_data_points: int = 100,
 ) -> dict[str, str] | str:
     """
     Fetch simple moving average (SMA) data from the Alpha Vantage API.
@@ -1533,6 +1534,7 @@ async def fetch_sma(
     :argument: time_period (int): The time period for the data.
     :argument: series_type (str): The series type for the data.
     :argument: datatype (str): The response data type (default: "json").
+    :argument: max_data_points (int): Maximum number of data points to return (default: 100).
 
     :returns: The simple moving average (SMA) data.
     """
@@ -1551,7 +1553,21 @@ async def fetch_sma(
     async with httpx.AsyncClient() as client:
         response = await client.get(API_BASE_URL, params=https_params)
         response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+        
+        if datatype == "csv":
+            return response.text
+            
+        # For JSON responses, apply response limiting to prevent token issues
+        full_response = response.json()
+        
+        # Import response limiting utilities
+        from .response_utils import limit_time_series_response, should_limit_response
+        
+        # Check if response should be limited
+        if should_limit_response(full_response):
+            return limit_time_series_response(full_response, max_data_points)
+        
+        return full_response
 
 
 async def fetch_ema(

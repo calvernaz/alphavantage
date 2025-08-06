@@ -764,6 +764,9 @@ async def list_prompts() -> list[types.Prompt]:
                 types.PromptArgument(
                     name="datatype", description="Data type (json or csv). Default is json", required=False
                 ),
+                types.PromptArgument(
+                    name="max_data_points", description="Maximum number of data points to fetch. Default is 1000", required=False
+                ),
             ],
         ),
         types.Prompt(
@@ -2889,6 +2892,11 @@ async def handle_list_tools() -> list[types.Tool]:
                     "time_period": {"type": "number"},
                     "series_type": {"type": "string"},
                     "datatype": {"type": "string"},
+                    "max_data_points": {
+                        "type": "number",
+                        "description": "Maximum number of data points to return (default: 100)",
+                        "default": 100
+                    },
                 },
                 "required": ["symbol", "interval", "time_period", "series_type"],
             },
@@ -4229,6 +4237,7 @@ async def handle_call_tool(
                 time_period = arguments.get("time_period")
                 series_type = arguments.get("series_type")
                 datatype = arguments.get("datatype", "json")
+                max_data_points = arguments.get("max_data_points", 100)
 
                 if not symbol or not interval or not time_period or not series_type:
                     raise ValueError(
@@ -4236,7 +4245,7 @@ async def handle_call_tool(
                     )
 
                 result = await fetch_sma(
-                    symbol, interval, month, time_period, series_type, datatype
+                    symbol, interval, month, time_period, series_type, datatype, max_data_points
                 )
 
             case AlphavantageTools.EMA.value:
