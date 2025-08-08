@@ -17,7 +17,7 @@ def main():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Alpha Vantage MCP Server')
-    parser.add_argument('--server', type=str, choices=['stdio', 'sse'], default='stdio',
+    parser.add_argument('--server', type=str, choices=['stdio', 'http'], default='stdio',
                         help='Server type: stdio or sse (default: stdio)')
     parser.add_argument('--port', type=int, default=8080,
                         help='Port for HTTP server (default: 8080)')
