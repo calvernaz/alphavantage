@@ -11,6 +11,12 @@ if not API_KEY:
 
 API_BASE_URL = "https://www.alphavantage.co/query"
 
+async def _make_api_request(https_params: dict[str, str], datatype: str) -> dict[str, str] | str:
+    async with httpx.AsyncClient() as client:
+        response = await client.get(API_BASE_URL, params=https_params)
+        response.raise_for_status()
+        return response.text if datatype == "csv" else response.json()
+
 
 #####
 # Core Stock APIs
@@ -50,10 +56,7 @@ async def fetch_intraday(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_time_series_daily(
@@ -75,10 +78,7 @@ async def fetch_time_series_daily(
         "outputsize": outputsize,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_time_series_daily_adjusted(
@@ -100,10 +100,7 @@ async def fetch_time_series_daily_adjusted(
         "outputsize": outputsize,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_time_series_weekly(
@@ -124,10 +121,7 @@ async def fetch_time_series_weekly(
         "datatype": datatype,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_time_series_weekly_adjusted(
@@ -148,10 +142,7 @@ async def fetch_time_series_weekly_adjusted(
         "datatype": datatype,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_time_series_monthly(
@@ -172,10 +163,7 @@ async def fetch_time_series_monthly(
         "datatype": datatype,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_time_series_monthly_adjusted(
@@ -196,10 +184,7 @@ async def fetch_time_series_monthly_adjusted(
         "datatype": datatype,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_quote(symbol: str, datatype: str = "json") -> dict[str, str] | str:
@@ -218,10 +203,7 @@ async def fetch_quote(symbol: str, datatype: str = "json") -> dict[str, str] | s
         "datatype": datatype,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_realtime_bulk_quotes(
@@ -242,10 +224,7 @@ async def fetch_realtime_bulk_quotes(
         "datatype": datatype,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def search_endpoint(
@@ -266,10 +245,7 @@ async def search_endpoint(
         "datatype": datatype,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_market_status() -> dict[str, str] | str:
@@ -280,10 +256,7 @@ async def fetch_market_status() -> dict[str, str] | str:
     """
 
     https_params = {"function": "MARKET_STATUS", "apikey": API_KEY}
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.json()
+    return await _make_api_request(https_params, "json")
 
 
 #####
@@ -311,10 +284,7 @@ async def fetch_realtime_options(
         "contract": contract,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_historical_options(
@@ -335,10 +305,7 @@ async def fetch_historical_options(
         "date": date,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 #####
@@ -380,10 +347,7 @@ async def fetch_news_sentiment(
         "limit": limit,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_top_gainer_losers() -> dict[str, str]:
@@ -397,10 +361,7 @@ async def fetch_top_gainer_losers() -> dict[str, str]:
         "function": "TOP_GAINERS_LOSERS",
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.json()
+    return await _make_api_request(https_params, "json")
 
 
 async def fetch_insider_transactions(symbol: str) -> dict[str, str]:
@@ -417,10 +378,7 @@ async def fetch_insider_transactions(symbol: str) -> dict[str, str]:
         "symbol": symbol,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.json()
+    return await _make_api_request(https_params, "json")
 
 
 async def fetch_analytics_fixed_window(
@@ -451,10 +409,7 @@ async def fetch_analytics_fixed_window(
         "calculations": ",".join(calculations) if calculations else None,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.json()
+    return await _make_api_request(https_params, "json")
 
 
 async def fetch_analytics_sliding_window(
@@ -483,17 +438,12 @@ async def fetch_analytics_sliding_window(
         "calculations": ",".join(calculations) if calculations else None,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.json()
+    return await _make_api_request(https_params, "json")
 
 
 #####
 # Fundamental data APIs
 #####
-
-
 async def fetch_company_overview(symbol: str) -> dict[str, str]:
     """
     Fetch company overview data from the Alpha Vantage API.
@@ -508,10 +458,7 @@ async def fetch_company_overview(symbol: str) -> dict[str, str]:
         "symbol": symbol,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.json()
+    return await _make_api_request(https_params, "json")
 
 
 async def fetch_etf_profile(symbol: str) -> dict[str, str]:
@@ -528,10 +475,7 @@ async def fetch_etf_profile(symbol: str) -> dict[str, str]:
         "symbol": symbol,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.json()
+    return await _make_api_request(https_params, "json")
 
 
 async def company_dividends(symbol: str) -> dict[str, str]:
@@ -548,10 +492,7 @@ async def company_dividends(symbol: str) -> dict[str, str]:
         "symbol": symbol,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.json()
+    return await _make_api_request(https_params, "json")
 
 
 async def fetch_company_splits(symbol: str) -> dict[str, str]:
@@ -568,10 +509,7 @@ async def fetch_company_splits(symbol: str) -> dict[str, str]:
         "symbol": symbol,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.json()
+    return await _make_api_request(https_params, "json")
 
 
 async def fetch_income_statement(symbol: str) -> dict[str, str]:
@@ -588,10 +526,7 @@ async def fetch_income_statement(symbol: str) -> dict[str, str]:
         "symbol": symbol,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.json()
+    return await _make_api_request(https_params, "json")
 
 
 async def fetch_balance_sheet(symbol: str) -> dict[str, str]:
@@ -608,10 +543,7 @@ async def fetch_balance_sheet(symbol: str) -> dict[str, str]:
         "symbol": symbol,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.json()
+    return await _make_api_request(https_params, "json")
 
 
 async def fetch_cash_flow(symbol: str) -> dict[str, str]:
@@ -648,10 +580,7 @@ async def fetch_earnings(symbol: str) -> dict[str, str]:
         "symbol": symbol,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.json()
+    return await _make_api_request(https_params, "json")
 
 async def fetch_earnings_call_transcript(symbol: str, quarter: str) -> dict[str, str]:
     """
@@ -669,10 +598,7 @@ async def fetch_earnings_call_transcript(symbol: str, quarter: str) -> dict[str,
         "quarter": quarter,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.json()
+    return await _make_api_request(https_params, "json")
 
 async def fetch_listing_status(
         date: str = None, state: str = "active"
@@ -692,10 +618,7 @@ async def fetch_listing_status(
         "state": state,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.json()
+    return await _make_api_request(https_params, "json")
 
 
 async def fetch_earnings_calendar(
@@ -718,10 +641,7 @@ async def fetch_earnings_calendar(
     if symbol:
         https_params["symbol"] = symbol
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text
+    return await _make_api_request(https_params, "csv")
 
 
 async def fetch_ipo_calendar() -> str:
@@ -735,10 +655,8 @@ async def fetch_ipo_calendar() -> str:
         "function": "IPO_CALENDAR",
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text
+
+    return await _make_api_request(https_params, "csv")
 
 
 #####
@@ -765,10 +683,7 @@ async def fetch_exchange_rate(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.json()
+    return await _make_api_request(https_params, "json")
 
 
 async def fetch_fx_intraday(
@@ -800,10 +715,7 @@ async def fetch_fx_intraday(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_fx_daily(
@@ -831,10 +743,7 @@ async def fetch_fx_daily(
         "outputsize": outputsize,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_fx_weekly(
@@ -857,11 +766,7 @@ async def fetch_fx_weekly(
         "datatype": datatype,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
-
+    return await _make_api_request(https_params, datatype)
 
 async def fetch_fx_monthly(
     from_symbol: str, to_symbol: str, datatype: str = "json"
@@ -883,10 +788,7 @@ async def fetch_fx_monthly(
         "datatype": datatype,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 #####
@@ -921,11 +823,7 @@ async def fetch_digital_currency_intraday(
         "outputsize": outputsize,
         "apikey": API_KEY,
     }
-
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_digital_currency_daily(symbol: str, market: str) -> str:
@@ -945,10 +843,7 @@ async def fetch_digital_currency_daily(symbol: str, market: str) -> str:
         "market": market,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text
+    return await _make_api_request(https_params, "csv")
 
 
 async def fetch_digital_currency_weekly(symbol: str, market: str) -> str:
@@ -968,10 +863,7 @@ async def fetch_digital_currency_weekly(symbol: str, market: str) -> str:
         "market": market,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text
+    return await _make_api_request(https_params, "csv")
 
 
 async def fetch_digital_currency_monthly(symbol: str, market: str) -> str:
@@ -991,10 +883,7 @@ async def fetch_digital_currency_monthly(symbol: str, market: str) -> str:
         "market": market,
         "apikey": API_KEY,
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text
+    return await _make_api_request(https_params, "csv")
 
 
 #####
@@ -1021,10 +910,7 @@ async def fetch_wti_crude(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_brent_crude(
@@ -1046,10 +932,7 @@ async def fetch_brent_crude(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_natural_gas(
@@ -1071,10 +954,7 @@ async def fetch_natural_gas(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_copper(
@@ -1096,10 +976,7 @@ async def fetch_copper(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_aluminum(
@@ -1121,10 +998,7 @@ async def fetch_aluminum(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_wheat(
@@ -1146,11 +1020,7 @@ async def fetch_wheat(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
-
+    return await _make_api_request(https_params, datatype)
 
 async def fetch_corn(
     interval: str = "monthly", datatype: str = "json"
@@ -1171,10 +1041,7 @@ async def fetch_corn(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_cotton(
@@ -1196,10 +1063,7 @@ async def fetch_cotton(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_sugar(
@@ -1221,10 +1085,7 @@ async def fetch_sugar(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_coffee(
@@ -1246,10 +1107,7 @@ async def fetch_coffee(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_all_commodities(
@@ -1271,10 +1129,7 @@ async def fetch_all_commodities(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 #####
@@ -1301,10 +1156,7 @@ async def fetch_real_gdp(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_real_gdp_per_capita(datatype: str = "json") -> dict[str, str] | str:
@@ -1323,10 +1175,7 @@ async def fetch_real_gdp_per_capita(datatype: str = "json") -> dict[str, str] | 
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_treasury_yield(
@@ -1350,10 +1199,7 @@ async def fetch_treasury_yield(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_federal_funds_rate(
@@ -1375,10 +1221,7 @@ async def fetch_federal_funds_rate(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_cpi(
@@ -1400,10 +1243,7 @@ async def fetch_cpi(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_inflation(datatype: str = "json") -> dict[str, str] | str:
@@ -1421,10 +1261,7 @@ async def fetch_inflation(datatype: str = "json") -> dict[str, str] | str:
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_retail_sales(datatype: str = "json") -> dict[str, str] | str:
@@ -1442,10 +1279,7 @@ async def fetch_retail_sales(datatype: str = "json") -> dict[str, str] | str:
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_durables(datatype: str = "json") -> dict[str, str] | str:
@@ -1463,10 +1297,7 @@ async def fetch_durables(datatype: str = "json") -> dict[str, str] | str:
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_unemployment(datatype: str = "json") -> dict[str, str] | str:
@@ -1484,10 +1315,7 @@ async def fetch_unemployment(datatype: str = "json") -> dict[str, str] | str:
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_nonfarm_payrolls(datatype: str = "json") -> dict[str, str] | str:
@@ -1505,10 +1333,7 @@ async def fetch_nonfarm_payrolls(datatype: str = "json") -> dict[str, str] | str
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 #####
@@ -1562,7 +1387,7 @@ async def fetch_sma(
         
         # Import response limiting utilities
         from .response_utils import limit_time_series_response, should_limit_response
-        
+
         # Check if response should be limited
         if should_limit_response(full_response):
             return limit_time_series_response(full_response, max_data_points)
@@ -1602,10 +1427,7 @@ async def fetch_ema(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_wma(
@@ -1640,10 +1462,7 @@ async def fetch_wma(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_dema(
@@ -1678,10 +1497,7 @@ async def fetch_dema(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_tema(
@@ -1716,10 +1532,7 @@ async def fetch_tema(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_trima(
@@ -1754,10 +1567,7 @@ async def fetch_trima(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_kama(
@@ -1792,10 +1602,7 @@ async def fetch_kama(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_mama(
@@ -1833,10 +1640,7 @@ async def fetch_mama(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_vwap(
@@ -1865,10 +1669,7 @@ async def fetch_vwap(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_t3(
@@ -1903,10 +1704,7 @@ async def fetch_t3(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_macd(
@@ -1947,10 +1745,7 @@ async def fetch_macd(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_macdext(
@@ -2000,10 +1795,7 @@ async def fetch_macdext(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_stoch(
@@ -2047,10 +1839,7 @@ async def fetch_stoch(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_stochf(
@@ -2088,10 +1877,7 @@ async def fetch_stochf(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_rsi(
@@ -2126,10 +1912,7 @@ async def fetch_rsi(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_stochrsi(
@@ -2173,10 +1956,7 @@ async def fetch_stochrsi(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_willr(
@@ -2208,10 +1988,7 @@ async def fetch_willr(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_adx(
@@ -2243,10 +2020,7 @@ async def fetch_adx(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_adxr(
@@ -2278,10 +2052,7 @@ async def fetch_adxr(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_apo(
@@ -2322,10 +2093,7 @@ async def fetch_apo(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_ppo(
@@ -2366,10 +2134,7 @@ async def fetch_ppo(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_mom(
@@ -2404,10 +2169,7 @@ async def fetch_mom(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_bop(
@@ -2436,10 +2198,7 @@ async def fetch_bop(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_cci(
@@ -2471,10 +2230,7 @@ async def fetch_cci(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_cmo(
@@ -2509,10 +2265,7 @@ async def fetch_cmo(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_roc(
@@ -2547,10 +2300,7 @@ async def fetch_roc(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_rocr(
@@ -2585,10 +2335,7 @@ async def fetch_rocr(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_aroon(
@@ -2620,10 +2367,7 @@ async def fetch_aroon(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_aroonosc(
@@ -2655,10 +2399,7 @@ async def fetch_aroonosc(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_mfi(
@@ -2690,10 +2431,7 @@ async def fetch_mfi(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_trix(
@@ -2728,10 +2466,7 @@ async def fetch_trix(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_ultosc(
@@ -2769,10 +2504,7 @@ async def fetch_ultosc(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_dx(
@@ -2804,10 +2536,7 @@ async def fetch_dx(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_minus_di(
@@ -2839,10 +2568,7 @@ async def fetch_minus_di(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_plus_di(
@@ -2874,10 +2600,7 @@ async def fetch_plus_di(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_minus_dm(
@@ -2909,10 +2632,7 @@ async def fetch_minus_dm(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_plus_dm(
@@ -2944,10 +2664,7 @@ async def fetch_plus_dm(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_bbands(
@@ -2991,10 +2708,7 @@ async def fetch_bbands(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_midpoint(
@@ -3029,10 +2743,7 @@ async def fetch_midpoint(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_midprice(
@@ -3064,10 +2775,7 @@ async def fetch_midprice(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_sar(
@@ -3102,10 +2810,7 @@ async def fetch_sar(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_trange(
@@ -3134,10 +2839,7 @@ async def fetch_trange(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_atr(
@@ -3169,10 +2871,7 @@ async def fetch_atr(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_natr(
@@ -3204,10 +2903,7 @@ async def fetch_natr(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_ad(
@@ -3236,10 +2932,7 @@ async def fetch_ad(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_adosc(
@@ -3274,10 +2967,7 @@ async def fetch_adosc(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_obv(
@@ -3306,10 +2996,7 @@ async def fetch_obv(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_ht_trendline(
@@ -3341,10 +3028,7 @@ async def fetch_ht_trendline(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_ht_sine(
@@ -3376,10 +3060,7 @@ async def fetch_ht_sine(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_ht_trendmode(
@@ -3408,11 +3089,7 @@ async def fetch_ht_trendmode(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
-
+    return await _make_api_request(https_params, datatype)
 
 async def fetch_ht_dcperiod(
     symbol: str,
@@ -3443,10 +3120,7 @@ async def fetch_ht_dcperiod(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_ht_dcphase(
@@ -3478,10 +3152,7 @@ async def fetch_ht_dcphase(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)
 
 
 async def fetch_ht_phasor(
@@ -3513,7 +3184,4 @@ async def fetch_ht_phasor(
         "apikey": API_KEY,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_BASE_URL, params=https_params)
-        response.raise_for_status()
-        return response.text if datatype == "csv" else response.json()
+    return await _make_api_request(https_params, datatype)

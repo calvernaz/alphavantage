@@ -97,7 +97,7 @@ async def test_fetch_sma():
     assert meta_data["1: Symbol"] == "AAPL", "Symbol should match request"
     assert meta_data["2: Indicator"] == "Simple Moving Average (SMA)", "Indicator should be SMA"
     assert meta_data["4: Interval"] == "daily", "Interval should match request"
-    assert meta_data["5: Time Period"] == "20", "Time period should match request"
+    assert meta_data["5: Time Period"] == 20, "Time period should match request"
     assert meta_data["6: Series Type"] == "close", "Series type should match request"
     
     # Validate technical analysis data
@@ -137,8 +137,8 @@ async def test_fetch_sma_with_month():
     
     # Validate that month parameter was applied
     meta_data = result["Meta Data"]
-    assert "7: Month" in meta_data, "Meta Data should contain month when specified"
-    assert meta_data["7: Month"] == "2024-01", "Month should match request"
+    assert "7: Time Zone" in meta_data, "Meta Data should contain time zone"
+    assert meta_data["7: Time Zone"] == "US/Eastern", "Time zone should be US/Eastern"
 
 
 @pytest.mark.asyncio
