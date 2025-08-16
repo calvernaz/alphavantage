@@ -1,5 +1,5 @@
 .idea
-
+aws-chalice
 # Logs
 logs
 *.log
