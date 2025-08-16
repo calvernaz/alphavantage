@@ -97,7 +97,7 @@ curl -X POST 'https://your-api-id.execute-api.region.amazonaws.com/prod/mcp' \
     "id": 3,
     "method": "tools/call",
     "params": {
-      "name": "get_stock_quote",
+      "name": "stock_quote",
       "arguments": {"symbol": "AAPL"}
     }
   }'
