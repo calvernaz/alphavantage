@@ -1,0 +1,9 @@
+chalice>=1.29.0
+mcp>=1.9.4
+starlette>=0.47.2
+uvicorn>=0.32.0
+toml>=0.10.2
+PyJWT>=2.10.1
+httpx>=0.28.1
+load-dotenv>=0.1.0
+requests>=2.32.0

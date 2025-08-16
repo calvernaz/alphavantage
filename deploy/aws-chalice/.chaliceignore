@@ -1,0 +1,15 @@
+# Chalice ignore file - specify what NOT to include
+# By default, Chalice includes everything, so we only exclude what we don't want
+
+# Exclude development files
+*.pyc
+__pycache__/
+.git/
+.gitignore
+*.md
+deploy.sh
+setup-cognito.sh
+
+# Include vendor/ directory with alphavantage_mcp_server package (don't ignore it)
+# This ensures the vendored package is included in the Lambda deployment
+# Note: vendor/ directory is automatically included by Chalice
