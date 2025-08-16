@@ -1,0 +1,104 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Stateless AlphaVantage MCP Server on AWS Lambda
+  Based on aws-samples/sample-serverless-mcp-servers pattern
+
+Parameters:
+  AlphaVantageApiKey:
+    Type: String
+    Description: AlphaVantage API Key
+    NoEcho: true
+  
+  OAuthEnabled:
+    Type: String
+    Default: 'false'
+    AllowedValues: ['true', 'false']
+    Description: Enable OAuth 2.1 authentication
+  
+  OAuthAuthorizationServerUrl:
+    Type: String
+    Default: ''
+    Description: OAuth Authorization Server URL (optional)
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+    Runtime: python3.12
+    Environment:
+      Variables:
+        ALPHAVANTAGE_API_KEY: !Ref AlphaVantageApiKey
+        OAUTH_ENABLED: !Ref OAuthEnabled
+        OAUTH_AUTHORIZATION_SERVER_URL: !Ref OAuthAuthorizationServerUrl
+
+Resources:
+  AlphaVantageMCPFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-alphavantage-mcp"
+      CodeUri: .
+      Handler: lambda_function.lambda_handler
+      Description: Stateless AlphaVantage MCP Server
+      Layers:
+        - !Ref AlphaVantageMCPLayer
+      Events:
+        McpApiPost:
+          Type: Api
+          Properties:
+            Path: /mcp
+            Method: post
+        McpApiOptions:
+          Type: Api
+          Properties:
+            Path: /mcp
+            Method: options
+      Environment:
+        Variables:
+          PYTHONPATH: /var/task:/opt/python
+
+  # Lambda Layer for AlphaVantage MCP Server source code
+  AlphaVantageMCPLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: !Sub "${AWS::StackName}-alphavantage-mcp-layer"
+      Description: AlphaVantage MCP Server source code
+      ContentUri: ../../src/
+      CompatibleRuntimes:
+        - python3.12
+    Metadata:
+      BuildMethod: python3.12
+
+Outputs:
+  McpApiUrl:
+    Description: "API Gateway endpoint URL for MCP requests"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/mcp"
+    Export:
+      Name: !Sub "${AWS::StackName}-McpApiUrl"
+  
+  FunctionName:
+    Description: "Lambda Function Name"
+    Value: !Ref AlphaVantageMCPFunction
+    Export:
+      Name: !Sub "${AWS::StackName}-FunctionName"
+  
+  TestCommands:
+    Description: "Test commands for the deployed MCP server"
+    Value: !Sub |
+      # Initialize MCP session
+      curl -X POST https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/mcp \
+        -H 'Content-Type: application/json' \
+        -H 'Accept: application/json' \
+        -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test-client","version":"1.0.0"}}}'
+      
+      # List available tools
+      curl -X POST https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/mcp \
+        -H 'Content-Type: application/json' \
+        -H 'Accept: application/json' \
+        -d '{"jsonrpc":"2.0","id":2,"method":"tools/list"}'
+      
+      # Call a tool (example: get stock quote)
+      curl -X POST https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/mcp \
+        -H 'Content-Type: application/json' \
+        -H 'Accept: application/json' \
+        -d '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"get_stock_quote","arguments":{"symbol":"AAPL"}}}'

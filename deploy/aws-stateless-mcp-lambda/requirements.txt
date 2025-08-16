@@ -1,0 +1,18 @@
+# Core MCP dependencies
+mcp>=1.0.0
+
+# AlphaVantage MCP server dependencies  
+requests>=2.31.0
+aiohttp>=3.9.0
+pydantic>=2.5.0
+toml>=0.10.2
+uvicorn>=0.24.0
+starlette>=0.27.0
+
+# OAuth 2.1 support
+PyJWT>=2.8.0
+httpx>=0.25.0
+cryptography>=41.0.0
+
+# AWS Lambda runtime
+boto3>=1.34.0
