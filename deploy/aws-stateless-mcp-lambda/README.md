@@ -221,13 +221,6 @@ Remove all AWS resources:
 aws cloudformation delete-stack --stack-name alphavantage-stateless-mcp
 ```
 
-## 🔄 Comparison with Other Approaches
-
-| Approach | Session State | Scaling | Complexity | Lambda Compatible |
-|----------|---------------|---------|------------|-------------------|
-| **Stateless MCP** | ❌ None | ✅ Perfect | 🟢 Simple | ✅ Yes |
-| Chalice | ⚠️ Per-request | ⚠️ Limited | 🟡 Medium | ⚠️ Partial |
-| Lambda Web Adapter | ✅ Persistent | ⚠️ Limited | 🔴 Complex | ⚠️ Workaround |
 
 ## 📚 References
 
