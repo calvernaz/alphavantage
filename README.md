@@ -124,6 +124,27 @@ Options:
 - `--port`: Specify the port for the Streamable HTTP server (default: 8080)
 - `--oauth`: Enable OAuth 2.1 authentication (requires `--server http`)
 
+## 🚀 AWS Serverless Deployment
+
+Deploy the AlphaVantage MCP Server on AWS Lambda using the stateless MCP pattern for production-ready, scalable deployment.
+
+### Quick AWS Deployment
+
+```bash
+cd deploy/aws-stateless-mcp-lambda
+export ALPHAVANTAGE_API_KEY=your_api_key_here
+./deploy.sh
+```
+
+**Features:**
+- ✅ **Stateless MCP pattern** - Perfect for Lambda's execution model
+- ✅ **Auto-scaling** - Handles any load with AWS Lambda + API Gateway
+- ✅ **Cost-effective** - Pay only for requests (~$1-5/month for typical usage)
+- ✅ **Production-ready** - Based on AWS official sample patterns
+- ✅ **OAuth 2.1 support** - Optional authentication for secure access
+
+**📖 Full Documentation:** See [AWS Deployment Guide](deploy/aws-stateless-mcp-lambda/README.md) for complete setup instructions, testing, monitoring, and troubleshooting.
+
 ### Usage with Claude Desktop
 Add this to your `claude_desktop_config.json`:
 
