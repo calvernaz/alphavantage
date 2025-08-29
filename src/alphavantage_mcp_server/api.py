@@ -3,6 +3,8 @@ import os
 import httpx
 from dotenv import load_dotenv
 
+from .telemetry_instrument import instrument_tool
+
 load_dotenv()
 
 API_KEY = os.getenv("ALPHAVANTAGE_API_KEY")
@@ -11,7 +13,10 @@ if not API_KEY:
 
 API_BASE_URL = "https://www.alphavantage.co/query"
 
-async def _make_api_request(https_params: dict[str, str], datatype: str) -> dict[str, str] | str:
+
+async def _make_api_request(
+    https_params: dict[str, str], datatype: str
+) -> dict[str, str] | str:
     async with httpx.AsyncClient() as client:
         response = await client.get(API_BASE_URL, params=https_params)
         response.raise_for_status()
@@ -21,6 +26,7 @@ async def _make_api_request(https_params: dict[str, str], datatype: str) -> dict
 #####
 # Core Stock APIs
 #####
+@instrument_tool("time_series_intraday")
 async def fetch_intraday(
     symbol: str,
     interval: str = "60min",
@@ -59,6 +65,7 @@ async def fetch_intraday(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("time_series_daily")
 async def fetch_time_series_daily(
     symbol: str, datatype: str = "json", outputsize: str = "compact"
 ) -> dict[str, str] | str:
@@ -81,6 +88,7 @@ async def fetch_time_series_daily(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("time_series_daily_adjusted")
 async def fetch_time_series_daily_adjusted(
     symbol: str, datatype: str = "json", outputsize: str = "compact"
 ) -> dict[str, str] | str:
@@ -103,6 +111,7 @@ async def fetch_time_series_daily_adjusted(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("time_series_weekly")
 async def fetch_time_series_weekly(
     symbol: str, datatype: str = "json"
 ) -> dict[str, str] | str:
@@ -124,6 +133,7 @@ async def fetch_time_series_weekly(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("time_series_weekly_adjusted")
 async def fetch_time_series_weekly_adjusted(
     symbol: str, datatype: str = "json"
 ) -> dict[str, str] | str:
@@ -145,6 +155,7 @@ async def fetch_time_series_weekly_adjusted(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("time_series_monthly")
 async def fetch_time_series_monthly(
     symbol: str, datatype: str = "json"
 ) -> dict[str, str] | str:
@@ -166,6 +177,7 @@ async def fetch_time_series_monthly(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("time_series_monthly_adjusted")
 async def fetch_time_series_monthly_adjusted(
     symbol: str, datatype: str = "json"
 ) -> dict[str, str] | str:
@@ -187,6 +199,7 @@ async def fetch_time_series_monthly_adjusted(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("stock_quote")
 async def fetch_quote(symbol: str, datatype: str = "json") -> dict[str, str] | str:
     """
     Fetch a stock quote from the Alpha Vantage API.
@@ -206,6 +219,7 @@ async def fetch_quote(symbol: str, datatype: str = "json") -> dict[str, str] | s
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("realtime_bulk_quotes")
 async def fetch_realtime_bulk_quotes(
     symbols: list[str], datatype: str = "json"
 ) -> dict[str, str] | str:
@@ -227,6 +241,7 @@ async def fetch_realtime_bulk_quotes(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("symbol_search")
 async def search_endpoint(
     keywords: str, datatype: str = "json"
 ) -> dict[str, str] | str:
@@ -248,6 +263,7 @@ async def search_endpoint(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("market_status")
 async def fetch_market_status() -> dict[str, str] | str:
     """
     Fetch the market status from the Alpha Vantage API.
@@ -264,6 +280,7 @@ async def fetch_market_status() -> dict[str, str] | str:
 #####
 
 
+@instrument_tool("realtime_options")
 async def fetch_realtime_options(
     symbol: str, datatype: str = "json", contract: str = None
 ) -> dict[str, str] | str:
@@ -287,6 +304,7 @@ async def fetch_realtime_options(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("historical_options")
 async def fetch_historical_options(
     symbol: str, datatype: str = "json", date: str = None
 ) -> dict[str, str] | str:
@@ -313,6 +331,7 @@ async def fetch_historical_options(
 #####
 
 
+@instrument_tool("news_sentiment")
 async def fetch_news_sentiment(
     tickers: list[str],
     datatype: str = "json",
@@ -350,6 +369,7 @@ async def fetch_news_sentiment(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("top_gainers_losers")
 async def fetch_top_gainer_losers() -> dict[str, str]:
     """
     Fetch the top gainers or losers from the Alpha Vantage API.
@@ -364,6 +384,7 @@ async def fetch_top_gainer_losers() -> dict[str, str]:
     return await _make_api_request(https_params, "json")
 
 
+@instrument_tool("insider_transactions")
 async def fetch_insider_transactions(symbol: str) -> dict[str, str]:
     """
     Fetch insider transactions from the Alpha Vantage API.
@@ -381,6 +402,7 @@ async def fetch_insider_transactions(symbol: str) -> dict[str, str]:
     return await _make_api_request(https_params, "json")
 
 
+@instrument_tool("analytics_fixed_window")
 async def fetch_analytics_fixed_window(
     symbols: list[str],
     interval: str,
@@ -412,6 +434,7 @@ async def fetch_analytics_fixed_window(
     return await _make_api_request(https_params, "json")
 
 
+@instrument_tool("analytics_sliding_window")
 async def fetch_analytics_sliding_window(
     symbols: list[str],
     series_range: str = "full",
@@ -444,6 +467,7 @@ async def fetch_analytics_sliding_window(
 #####
 # Fundamental data APIs
 #####
+@instrument_tool("company_overview")
 async def fetch_company_overview(symbol: str) -> dict[str, str]:
     """
     Fetch company overview data from the Alpha Vantage API.
@@ -461,6 +485,7 @@ async def fetch_company_overview(symbol: str) -> dict[str, str]:
     return await _make_api_request(https_params, "json")
 
 
+@instrument_tool("etf_profile")
 async def fetch_etf_profile(symbol: str) -> dict[str, str]:
     """
     Fetch ETC profile from Alpha Vantage API.
@@ -478,6 +503,7 @@ async def fetch_etf_profile(symbol: str) -> dict[str, str]:
     return await _make_api_request(https_params, "json")
 
 
+@instrument_tool("company_dividends")
 async def company_dividends(symbol: str) -> dict[str, str]:
     """
     Fetch company dividends data from the Alpha Vantage API.
@@ -495,6 +521,7 @@ async def company_dividends(symbol: str) -> dict[str, str]:
     return await _make_api_request(https_params, "json")
 
 
+@instrument_tool("company_splits")
 async def fetch_company_splits(symbol: str) -> dict[str, str]:
     """
     Fetch company splits data from the Alpha Vantage API.
@@ -512,6 +539,7 @@ async def fetch_company_splits(symbol: str) -> dict[str, str]:
     return await _make_api_request(https_params, "json")
 
 
+@instrument_tool("income_statement")
 async def fetch_income_statement(symbol: str) -> dict[str, str]:
     """
     Fetch company income statement data from the Alpha Vantage API.
@@ -529,6 +557,7 @@ async def fetch_income_statement(symbol: str) -> dict[str, str]:
     return await _make_api_request(https_params, "json")
 
 
+@instrument_tool("balance_sheet")
 async def fetch_balance_sheet(symbol: str) -> dict[str, str]:
     """
     Fetch company balance sheet data from the Alpha Vantage API.
@@ -546,6 +575,7 @@ async def fetch_balance_sheet(symbol: str) -> dict[str, str]:
     return await _make_api_request(https_params, "json")
 
 
+@instrument_tool("cash_flow")
 async def fetch_cash_flow(symbol: str) -> dict[str, str]:
     """
     Fetch company cash flow data from the Alpha Vantage API.
@@ -566,6 +596,7 @@ async def fetch_cash_flow(symbol: str) -> dict[str, str]:
         return response.json()
 
 
+@instrument_tool("company_earnings")
 async def fetch_earnings(symbol: str) -> dict[str, str]:
     """
     Fetch company earnings data from the Alpha Vantage API.
@@ -582,6 +613,8 @@ async def fetch_earnings(symbol: str) -> dict[str, str]:
     }
     return await _make_api_request(https_params, "json")
 
+
+@instrument_tool("earnings_call_transcript")
 async def fetch_earnings_call_transcript(symbol: str, quarter: str) -> dict[str, str]:
     """
     This API returns the earnings call transcript for a given company in a specific quarter, covering over 15 years
@@ -600,8 +633,10 @@ async def fetch_earnings_call_transcript(symbol: str, quarter: str) -> dict[str,
     }
     return await _make_api_request(https_params, "json")
 
+
+@instrument_tool("listing_status")
 async def fetch_listing_status(
-        date: str = None, state: str = "active"
+    date: str = None, state: str = "active"
 ) -> dict[str, str]:
     """
     Fetch company listing status data from the Alpha Vantage API.
@@ -621,9 +656,8 @@ async def fetch_listing_status(
     return await _make_api_request(https_params, "json")
 
 
-async def fetch_earnings_calendar(
-    symbol: str, horizon: str = "3month"
-) -> str:
+@instrument_tool("earnings_calendar")
+async def fetch_earnings_calendar(symbol: str, horizon: str = "3month") -> str:
     """
     Fetch companies earnings calendar data from the Alpha Vantage API.
 
@@ -644,6 +678,7 @@ async def fetch_earnings_calendar(
     return await _make_api_request(https_params, "csv")
 
 
+@instrument_tool("ipo_calendar")
 async def fetch_ipo_calendar() -> str:
     """
     Fetch IPO calendar data from the Alpha Vantage API.
@@ -664,6 +699,7 @@ async def fetch_ipo_calendar() -> str:
 #####
 
 
+@instrument_tool("exchange_rate")
 async def fetch_exchange_rate(
     from_currency: str, to_currency: str
 ) -> dict[str, str] | str:
@@ -686,6 +722,7 @@ async def fetch_exchange_rate(
     return await _make_api_request(https_params, "json")
 
 
+@instrument_tool("fx_intraday")
 async def fetch_fx_intraday(
     from_symbol: str,
     to_symbol: str,
@@ -718,6 +755,7 @@ async def fetch_fx_intraday(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("fx_daily")
 async def fetch_fx_daily(
     from_symbol: str,
     to_symbol: str,
@@ -746,6 +784,7 @@ async def fetch_fx_daily(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("fx_weekly")
 async def fetch_fx_weekly(
     from_symbol: str, to_symbol: str, datatype: str = "json"
 ) -> dict[str, str] | str:
@@ -768,6 +807,8 @@ async def fetch_fx_weekly(
     }
     return await _make_api_request(https_params, datatype)
 
+
+@instrument_tool("fx_monthly")
 async def fetch_fx_monthly(
     from_symbol: str, to_symbol: str, datatype: str = "json"
 ) -> dict[str, str] | str:
@@ -796,6 +837,7 @@ async def fetch_fx_monthly(
 #####
 
 
+@instrument_tool("crypto_intraday")
 async def fetch_digital_currency_intraday(
     symbol: str,
     market: str,
@@ -826,6 +868,7 @@ async def fetch_digital_currency_intraday(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("digital_currency_daily")
 async def fetch_digital_currency_daily(symbol: str, market: str) -> str:
     """
     Fetch daily digital currency data from the Alpha Vantage API.
@@ -846,6 +889,7 @@ async def fetch_digital_currency_daily(symbol: str, market: str) -> str:
     return await _make_api_request(https_params, "csv")
 
 
+@instrument_tool("digital_currency_weekly")
 async def fetch_digital_currency_weekly(symbol: str, market: str) -> str:
     """
     Fetch weekly digital currency data from the Alpha Vantage API.
@@ -866,6 +910,7 @@ async def fetch_digital_currency_weekly(symbol: str, market: str) -> str:
     return await _make_api_request(https_params, "csv")
 
 
+@instrument_tool("digital_currency_monthly")
 async def fetch_digital_currency_monthly(symbol: str, market: str) -> str:
     """
     Fetch monthly digital currency data from the Alpha Vantage API.
@@ -891,6 +936,7 @@ async def fetch_digital_currency_monthly(symbol: str, market: str) -> str:
 #####
 
 
+@instrument_tool("wti_crude_oil")
 async def fetch_wti_crude(
     interval: str = "monthly", datatype: str = "json"
 ) -> dict[str, str] | str:
@@ -913,6 +959,7 @@ async def fetch_wti_crude(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("brent_crude_oil")
 async def fetch_brent_crude(
     interval: str = "monthly", datatype: str = "json"
 ) -> dict[str, str] | str:
@@ -935,6 +982,7 @@ async def fetch_brent_crude(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("natural_gas")
 async def fetch_natural_gas(
     interval: str = "monthly", datatype: str = "json"
 ) -> dict[str, str] | str:
@@ -957,6 +1005,7 @@ async def fetch_natural_gas(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("copper")
 async def fetch_copper(
     interval: str = "monthly", datatype: str = "json"
 ) -> dict[str, str] | str:
@@ -979,6 +1028,7 @@ async def fetch_copper(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("aluminum")
 async def fetch_aluminum(
     interval: str = "monthly", datatype: str = "json"
 ) -> dict[str, str] | str:
@@ -1001,6 +1051,7 @@ async def fetch_aluminum(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("wheat")
 async def fetch_wheat(
     interval: str = "monthly", datatype: str = "json"
 ) -> dict[str, str] | str:
@@ -1022,6 +1073,8 @@ async def fetch_wheat(
 
     return await _make_api_request(https_params, datatype)
 
+
+@instrument_tool("corn")
 async def fetch_corn(
     interval: str = "monthly", datatype: str = "json"
 ) -> dict[str, str] | str:
@@ -1044,6 +1097,7 @@ async def fetch_corn(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("cotton")
 async def fetch_cotton(
     interval: str = "monthly", datatype: str = "json"
 ) -> dict[str, str] | str:
@@ -1066,6 +1120,7 @@ async def fetch_cotton(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("sugar")
 async def fetch_sugar(
     interval: str = "monthly", datatype: str = "json"
 ) -> dict[str, str] | str:
@@ -1088,6 +1143,7 @@ async def fetch_sugar(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("coffee")
 async def fetch_coffee(
     interval: str = "monthly", datatype: str = "json"
 ) -> dict[str, str] | str:
@@ -1110,6 +1166,7 @@ async def fetch_coffee(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("all_commodities")
 async def fetch_all_commodities(
     interval: str = "monthly", datatype: str = "json"
 ) -> dict[str, str] | str:
@@ -1137,6 +1194,7 @@ async def fetch_all_commodities(
 #####
 
 
+@instrument_tool("real_gdp")
 async def fetch_real_gdp(
     interval: str = "monthly", datatype: str = "json"
 ) -> dict[str, str] | str:
@@ -1159,6 +1217,7 @@ async def fetch_real_gdp(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("real_gdp_per_capita")
 async def fetch_real_gdp_per_capita(datatype: str = "json") -> dict[str, str] | str:
     """
     Fetch real GDP per capita data from the Alpha Vantage API.
@@ -1178,6 +1237,7 @@ async def fetch_real_gdp_per_capita(datatype: str = "json") -> dict[str, str] | 
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("treasury_yield")
 async def fetch_treasury_yield(
     interval: str = "monthly", maturity: str = "10year", datatype: str = "json"
 ) -> dict[str, str] | str:
@@ -1202,6 +1262,7 @@ async def fetch_treasury_yield(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("federal_funds_rate")
 async def fetch_federal_funds_rate(
     interval: str = "monthly", datatype: str = "json"
 ) -> dict[str, str] | str:
@@ -1224,6 +1285,7 @@ async def fetch_federal_funds_rate(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("cpi")
 async def fetch_cpi(
     interval: str = "monthly", datatype: str = "json"
 ) -> dict[str, str] | str:
@@ -1246,6 +1308,7 @@ async def fetch_cpi(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("inflation")
 async def fetch_inflation(datatype: str = "json") -> dict[str, str] | str:
     """
     Fetch inflation data from the Alpha Vantage API.
@@ -1264,6 +1327,7 @@ async def fetch_inflation(datatype: str = "json") -> dict[str, str] | str:
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("retail_sales")
 async def fetch_retail_sales(datatype: str = "json") -> dict[str, str] | str:
     """
     Fetch retail sales data from the Alpha Vantage API.
@@ -1282,6 +1346,7 @@ async def fetch_retail_sales(datatype: str = "json") -> dict[str, str] | str:
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("durables")
 async def fetch_durables(datatype: str = "json") -> dict[str, str] | str:
     """
     Fetch durable goods data from the Alpha Vantage API.
@@ -1300,6 +1365,7 @@ async def fetch_durables(datatype: str = "json") -> dict[str, str] | str:
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("unemployment")
 async def fetch_unemployment(datatype: str = "json") -> dict[str, str] | str:
     """
     Fetch unemployment data from the Alpha Vantage API.
@@ -1318,6 +1384,7 @@ async def fetch_unemployment(datatype: str = "json") -> dict[str, str] | str:
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("nonfarm_payroll")
 async def fetch_nonfarm_payrolls(datatype: str = "json") -> dict[str, str] | str:
     """
     Fetch nonfarm payrolls data from the Alpha Vantage API.
@@ -1341,6 +1408,7 @@ async def fetch_nonfarm_payrolls(datatype: str = "json") -> dict[str, str] | str
 #####
 
 
+@instrument_tool("sma")
 async def fetch_sma(
     symbol: str,
     interval: str = None,
@@ -1378,23 +1446,24 @@ async def fetch_sma(
     async with httpx.AsyncClient() as client:
         response = await client.get(API_BASE_URL, params=https_params)
         response.raise_for_status()
-        
+
         if datatype == "csv":
             return response.text
-            
+
         # For JSON responses, apply response limiting to prevent token issues
         full_response = response.json()
-        
+
         # Import response limiting utilities
         from .response_utils import limit_time_series_response, should_limit_response
 
         # Check if response should be limited
         if should_limit_response(full_response):
             return limit_time_series_response(full_response, max_data_points)
-        
+
         return full_response
 
 
+@instrument_tool("ema")
 async def fetch_ema(
     symbol: str,
     interval: str = None,
@@ -1430,6 +1499,7 @@ async def fetch_ema(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("wma")
 async def fetch_wma(
     symbol: str,
     interval: str = None,
@@ -1465,6 +1535,7 @@ async def fetch_wma(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("dema")
 async def fetch_dema(
     symbol: str,
     interval: str = None,
@@ -1500,6 +1571,7 @@ async def fetch_dema(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("tema")
 async def fetch_tema(
     symbol: str,
     interval: str = None,
@@ -1535,6 +1607,7 @@ async def fetch_tema(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("trima")
 async def fetch_trima(
     symbol: str,
     interval: str = None,
@@ -1570,6 +1643,7 @@ async def fetch_trima(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("kama")
 async def fetch_kama(
     symbol: str,
     interval: str = None,
@@ -1605,6 +1679,7 @@ async def fetch_kama(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("mama")
 async def fetch_mama(
     symbol: str,
     interval: str = None,
@@ -1643,6 +1718,7 @@ async def fetch_mama(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("vwap")
 async def fetch_vwap(
     symbol: str,
     interval: str = None,
@@ -1672,6 +1748,7 @@ async def fetch_vwap(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("t3")
 async def fetch_t3(
     symbol: str,
     interval: str = None,
@@ -1707,6 +1784,7 @@ async def fetch_t3(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("macd")
 async def fetch_macd(
     symbol: str,
     interval: str = None,
@@ -1748,6 +1826,7 @@ async def fetch_macd(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("macdext")
 async def fetch_macdext(
     symbol: str,
     interval: str = None,
@@ -1798,6 +1877,7 @@ async def fetch_macdext(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("stoch")
 async def fetch_stoch(
     symbol: str,
     interval: str = None,
@@ -1842,6 +1922,7 @@ async def fetch_stoch(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("stochf")
 async def fetch_stochf(
     symbol: str,
     interval: str = None,
@@ -1880,6 +1961,7 @@ async def fetch_stochf(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("rsi")
 async def fetch_rsi(
     symbol: str,
     interval: str = None,
@@ -1915,6 +1997,7 @@ async def fetch_rsi(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("stochrsi")
 async def fetch_stochrsi(
     symbol: str,
     interval: str = None,
@@ -1959,6 +2042,7 @@ async def fetch_stochrsi(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("willr")
 async def fetch_willr(
     symbol: str,
     interval: str = None,
@@ -1991,6 +2075,7 @@ async def fetch_willr(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("adx")
 async def fetch_adx(
     symbol: str,
     interval: str = None,
@@ -2023,6 +2108,7 @@ async def fetch_adx(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("adxr")
 async def fetch_adxr(
     symbol: str,
     interval: str = None,
@@ -2055,6 +2141,7 @@ async def fetch_adxr(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("apo")
 async def fetch_apo(
     symbol: str,
     interval: str = None,
@@ -2096,6 +2183,7 @@ async def fetch_apo(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("ppo")
 async def fetch_ppo(
     symbol: str,
     interval: str = None,
@@ -2137,6 +2225,7 @@ async def fetch_ppo(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("mom")
 async def fetch_mom(
     symbol: str,
     interval: str = None,
@@ -2172,6 +2261,7 @@ async def fetch_mom(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("bop")
 async def fetch_bop(
     symbol: str,
     interval: str = None,
@@ -2201,6 +2291,7 @@ async def fetch_bop(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("cci")
 async def fetch_cci(
     symbol: str,
     interval: str = None,
@@ -2233,6 +2324,7 @@ async def fetch_cci(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("cmo")
 async def fetch_cmo(
     symbol: str,
     interval: str = None,
@@ -2268,6 +2360,7 @@ async def fetch_cmo(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("roc")
 async def fetch_roc(
     symbol: str,
     interval: str = None,
@@ -2303,6 +2396,7 @@ async def fetch_roc(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("rocr")
 async def fetch_rocr(
     symbol: str,
     interval: str = None,
@@ -2338,6 +2432,7 @@ async def fetch_rocr(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("aroon")
 async def fetch_aroon(
     symbol: str,
     interval: str = None,
@@ -2370,6 +2465,7 @@ async def fetch_aroon(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("aroonosc")
 async def fetch_aroonosc(
     symbol: str,
     interval: str = None,
@@ -2402,6 +2498,7 @@ async def fetch_aroonosc(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("mfi")
 async def fetch_mfi(
     symbol: str,
     interval: str = None,
@@ -2434,6 +2531,7 @@ async def fetch_mfi(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("trix")
 async def fetch_trix(
     symbol: str,
     interval: str = None,
@@ -2469,6 +2567,7 @@ async def fetch_trix(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("ultosc")
 async def fetch_ultosc(
     symbol: str,
     interval: str = None,
@@ -2507,6 +2606,7 @@ async def fetch_ultosc(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("dx")
 async def fetch_dx(
     symbol: str,
     interval: str = None,
@@ -2539,6 +2639,7 @@ async def fetch_dx(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("minus_di")
 async def fetch_minus_di(
     symbol: str,
     interval: str = None,
@@ -2571,6 +2672,7 @@ async def fetch_minus_di(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("plus_di")
 async def fetch_plus_di(
     symbol: str,
     interval: str = None,
@@ -2603,6 +2705,7 @@ async def fetch_plus_di(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("minus_dm")
 async def fetch_minus_dm(
     symbol: str,
     interval: str = None,
@@ -2635,6 +2738,7 @@ async def fetch_minus_dm(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("plus_dm")
 async def fetch_plus_dm(
     symbol: str,
     interval: str = None,
@@ -2667,6 +2771,7 @@ async def fetch_plus_dm(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("bbands")
 async def fetch_bbands(
     symbol: str,
     interval: str = None,
@@ -2711,6 +2816,7 @@ async def fetch_bbands(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("midpoint")
 async def fetch_midpoint(
     symbol: str,
     interval: str = None,
@@ -2746,6 +2852,7 @@ async def fetch_midpoint(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("midprice")
 async def fetch_midprice(
     symbol: str,
     interval: str = None,
@@ -2778,6 +2885,7 @@ async def fetch_midprice(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("sar")
 async def fetch_sar(
     symbol: str,
     interval: str = None,
@@ -2813,6 +2921,7 @@ async def fetch_sar(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("trange")
 async def fetch_trange(
     symbol: str,
     interval: str = None,
@@ -2842,6 +2951,7 @@ async def fetch_trange(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("atr")
 async def fetch_atr(
     symbol: str,
     interval: str = None,
@@ -2874,6 +2984,7 @@ async def fetch_atr(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("natr")
 async def fetch_natr(
     symbol: str,
     interval: str = None,
@@ -2906,6 +3017,7 @@ async def fetch_natr(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("ad")
 async def fetch_ad(
     symbol: str,
     interval: str = None,
@@ -2935,6 +3047,7 @@ async def fetch_ad(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("adosc")
 async def fetch_adosc(
     symbol: str,
     interval: str = None,
@@ -2970,6 +3083,7 @@ async def fetch_adosc(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("obv")
 async def fetch_obv(
     symbol: str,
     interval: str = None,
@@ -2999,6 +3113,7 @@ async def fetch_obv(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("ht_trendline")
 async def fetch_ht_trendline(
     symbol: str,
     interval: str = None,
@@ -3031,6 +3146,7 @@ async def fetch_ht_trendline(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("ht_sine")
 async def fetch_ht_sine(
     symbol: str,
     interval: str = None,
@@ -3063,6 +3179,7 @@ async def fetch_ht_sine(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("ht_trendmode")
 async def fetch_ht_trendmode(
     symbol: str,
     interval: str = None,
@@ -3091,6 +3208,8 @@ async def fetch_ht_trendmode(
 
     return await _make_api_request(https_params, datatype)
 
+
+@instrument_tool("ht_dcperiod")
 async def fetch_ht_dcperiod(
     symbol: str,
     interval: str = None,
@@ -3123,6 +3242,7 @@ async def fetch_ht_dcperiod(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("ht_dcphase")
 async def fetch_ht_dcphase(
     symbol: str,
     interval: str = None,
@@ -3155,6 +3275,7 @@ async def fetch_ht_dcphase(
     return await _make_api_request(https_params, datatype)
 
 
+@instrument_tool("ht_phasor")
 async def fetch_ht_phasor(
     symbol: str,
     interval: str = None,

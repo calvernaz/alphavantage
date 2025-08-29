@@ -3,11 +3,14 @@ AlphaVantage MCP Server Tools Definition
 
 This module contains the tool definitions and schemas for the AlphaVantage MCP server.
 """
+
 import mcp.types as types
 from enum import Enum
 
+
 class AlphavantageTools(str, Enum):
     """Enumeration of all available AlphaVantage tools."""
+
     TIME_SERIES_INTRADAY = "time_series_intraday"
     TIME_SERIES_DAILY = "time_series_daily"
     TIME_SERIES_DAILY_ADJUSTED = "time_series_daily_adjusted"
@@ -433,9 +436,7 @@ def tools_definitions():
             description="Fetch company earnings",
             inputSchema={
                 "type": "object",
-                "properties": {
-                    "symbol": {"type": "string"}
-                },
+                "properties": {"symbol": {"type": "string"}},
                 "required": ["symbol"],
             },
         ),
@@ -861,7 +862,7 @@ def tools_definitions():
                     "max_data_points": {
                         "type": "number",
                         "description": "Maximum number of data points to return (default: 100)",
-                        "default": 100
+                        "default": 100,
                     },
                 },
                 "required": ["symbol", "interval", "time_period", "series_type"],

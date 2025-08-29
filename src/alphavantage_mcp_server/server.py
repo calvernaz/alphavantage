@@ -15,6 +15,7 @@ from starlette.responses import Response
 from .oauth import OAuthResourceServer, create_oauth_config_from_env
 from .prompts import prompts_definitions
 from .tools import AlphavantageTools, tools_definitions
+from .telemetry_bootstrap import init_telemetry
 from .api import (
     fetch_quote,
     fetch_intraday,
@@ -614,7 +615,7 @@ async def get_prompt(
         symbol = arguments.get("symbol") if arguments else ""
         market = arguments.get("market") if arguments else ""
         interval = arguments.get("interval") if arguments else ""
-        
+
         return types.GetPromptResult(
             messages=[
                 types.PromptMessage(
@@ -716,11 +717,10 @@ async def get_prompt(
                     content=types.TextContent(
                         type="text",
                         text="Fetch the Henry Hub natural gas spot prices in daily, weekly, and monthly horizons.",
-                    )
+                    ),
                 )
             ],
         )
-
 
     raise ValueError("Prompt implementation not found")
 
@@ -1244,7 +1244,13 @@ async def handle_call_tool(
                     )
 
                 result = await fetch_sma(
-                    symbol, interval, month, time_period, series_type, datatype, max_data_points
+                    symbol,
+                    interval,
+                    month,
+                    time_period,
+                    series_type,
+                    datatype,
+                    max_data_points,
                 )
 
             case AlphavantageTools.EMA.value:
@@ -2152,6 +2158,9 @@ def get_version():
 
 async def run_stdio_server():
     """Run the MCP stdio server"""
+    # Initialize telemetry for stdio transport
+    init_telemetry(start_metrics=True)
+
     async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
         await server.run(
             read_stream,
@@ -2169,7 +2178,13 @@ async def run_stdio_server():
 
 async def run_streamable_http_server(port=8080, oauth_enabled=False):
     """Run the Streamable HTTP server on the specified port"""
-    transport = StreamableHTTPServerTransport(mcp_session_id=None, is_json_response_enabled=True)
+
+    # Initialize telemetry for HTTP transport
+    init_telemetry(start_metrics=True)
+
+    transport = StreamableHTTPServerTransport(
+        mcp_session_id=None, is_json_response_enabled=True
+    )
 
     # Setup OAuth if enabled
     oauth_server = None
@@ -2177,10 +2192,13 @@ async def run_streamable_http_server(port=8080, oauth_enabled=False):
         oauth_config = create_oauth_config_from_env()
         if oauth_config:
             oauth_server = OAuthResourceServer(oauth_config)
-            logger.info(f"OAuth enabled for resource server: {oauth_config.resource_server_uri}")
+            logger.info(
+                f"OAuth enabled for resource server: {oauth_config.resource_server_uri}"
+            )
         else:
-            logger.warning("OAuth requested but no configuration found. Running without OAuth.")
-    
+            logger.warning(
+                "OAuth requested but no configuration found. Running without OAuth."
+            )
 
     async with transport.connect() as (read_stream, write_stream):
         server_task = asyncio.create_task(
@@ -2197,59 +2215,69 @@ async def run_streamable_http_server(port=8080, oauth_enabled=False):
                 ),
             )
         )
+
         # Create OAuth-enhanced ASGI app wrapper for the transport
         async def asgi_app(scope, receive, send):
             if scope["type"] != "http":
                 return await send_404(send)
-            
+
             path = scope["path"]
             request = Request(scope, receive)
-            
+
             # Handle OAuth metadata endpoint if OAuth is enabled
             if oauth_server and path == oauth_server.config.resource_metadata_path:
                 response = await oauth_server.handle_resource_metadata_request(request)
                 return await send_starlette_response(response, send)
-            
+
             # Handle MCP requests
             elif path.startswith("/mcp"):
                 # OAuth authentication if enabled
                 if oauth_server:
                     # Extract session ID from request if present
                     session_id = request.headers.get("X-Session-ID")
-                    
-                    is_authenticated, validation_result = await oauth_server.authenticate_request(
-                        request, session_id
-                    )
-                    
+
+                    (
+                        is_authenticated,
+                        validation_result,
+                    ) = await oauth_server.authenticate_request(request, session_id)
+
                     if not is_authenticated:
                         # Return appropriate error response
-                        if validation_result and validation_result.error == "Insufficient scopes":
+                        if (
+                            validation_result
+                            and validation_result.error == "Insufficient scopes"
+                        ):
                             response = await oauth_server.create_forbidden_response(
                                 error="insufficient_scope",
-                                description="Required scopes not present in token"
+                                description="Required scopes not present in token",
                             )
                         else:
-                            error_desc = validation_result.error if validation_result else "No valid token provided"
+                            error_desc = (
+                                validation_result.error
+                                if validation_result
+                                else "No valid token provided"
+                            )
                             response = await oauth_server.create_unauthorized_response(
-                                error="invalid_token",
-                                description=error_desc
+                                error="invalid_token", description=error_desc
                             )
                         return await send_starlette_response(response, send)
-                    
+
                     # Log successful authentication
-                    logger.info(f"Authenticated MCP request for user: {validation_result.subject}")
-                
+                    logger.info(
+                        f"Authenticated MCP request for user: {validation_result.subject}"
+                    )
+
                 # Process MCP request
                 try:
                     await transport.handle_request(scope, receive, send)
                 except Exception as e:
                     logger.error(f"Error handling MCP request: {e}")
                     await send_error_response(send, 500, "Internal Server Error")
-            
+
             else:
                 # Return 404 for unknown paths
                 await send_404(send)
-        
+
         config = uvicorn.Config(asgi_app, host="localhost", port=port)
         uvicorn_server = uvicorn.Server(config)
         http_task = asyncio.create_task(uvicorn_server.serve())
@@ -2260,63 +2288,74 @@ async def run_streamable_http_server(port=8080, oauth_enabled=False):
             # Cleanup OAuth resources
             if oauth_server:
                 await oauth_server.cleanup()
-    
 
 
 async def send_starlette_response(response: Response, send):
     """Send a Starlette Response through ASGI send callable."""
-    await send({
-        "type": "http.response.start",
-        "status": response.status_code,
-        "headers": [
-            [key.encode(), value.encode()] 
-            for key, value in response.headers.items()
-        ],
-    })
-    
+    await send(
+        {
+            "type": "http.response.start",
+            "status": response.status_code,
+            "headers": [
+                [key.encode(), value.encode()]
+                for key, value in response.headers.items()
+            ],
+        }
+    )
+
     # Handle different response types
-    if hasattr(response, 'body'):
+    if hasattr(response, "body"):
         body = response.body
-    elif hasattr(response, 'content'):
+    elif hasattr(response, "content"):
         body = response.content
     else:
         body = b""
-    
-    await send({
-        "type": "http.response.body",
-        "body": body,
-    })
+
+    await send(
+        {
+            "type": "http.response.body",
+            "body": body,
+        }
+    )
 
 
 async def send_404(send):
     """Send a 404 Not Found response."""
-    await send({
-        "type": "http.response.start",
-        "status": 404,
-        "headers": [[b"content-type", b"text/plain"]],
-    })
-    await send({
-        "type": "http.response.body",
-        "body": b"Not Found",
-    })
+    await send(
+        {
+            "type": "http.response.start",
+            "status": 404,
+            "headers": [[b"content-type", b"text/plain"]],
+        }
+    )
+    await send(
+        {
+            "type": "http.response.body",
+            "body": b"Not Found",
+        }
+    )
 
 
 async def send_error_response(send, status_code: int, message: str):
     """Send an error response."""
-    await send({
-        "type": "http.response.start",
-        "status": status_code,
-        "headers": [[b"content-type", b"text/plain"]],
-    })
-    await send({
-        "type": "http.response.body",
-        "body": message.encode(),
-    })
+    await send(
+        {
+            "type": "http.response.start",
+            "status": status_code,
+            "headers": [[b"content-type", b"text/plain"]],
+        }
+    )
+    await send(
+        {
+            "type": "http.response.body",
+            "body": message.encode(),
+        }
+    )
 
 
-async def main(server_type='stdio', port=8080, oauth_enabled=False):
+async def main(server_type="stdio", port=8080, oauth_enabled=False):
     """Main entry point with server type selection"""
-    if server_type == 'http':
+    if server_type == "http":
         if oauth_enabled:
             logger.info(f"Starting Streamable HTTP server with OAuth on port {port}")
         else:

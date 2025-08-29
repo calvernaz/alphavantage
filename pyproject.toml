@@ -16,6 +16,8 @@ dependencies = [
     "PyJWT>=2.10.1",
     "httpx>=0.28.1",
     "requests>=2.32.0",
+
+    "prometheus-client>=0.20.0",
 ]
 [[project.authors]]
 name = "Cesar Alvernaz"

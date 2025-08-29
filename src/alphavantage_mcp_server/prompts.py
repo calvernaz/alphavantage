@@ -3,10 +3,11 @@ AlphaVantage MCP Server Prompts Definition
 
 This module contains the prompt definitions and schemas for the AlphaVantage MCP server.
 """
+
 import mcp.types as types
 from mcp.types import Prompt
 
-from alphavantage_mcp_server.tools import AlphavantageTools
+from .tools import AlphavantageTools
 
 
 def prompts_definitions() -> list[Prompt]:
@@ -25,7 +26,6 @@ def prompts_definitions() -> list[Prompt]:
                     description="Data type (json or csv). Default is json",
                     required=False,
                 ),
-
             ],
         ),
         types.Prompt(
@@ -163,19 +163,29 @@ def prompts_definitions() -> list[Prompt]:
                     name="tickers", description="Stock tickers", required=False
                 ),
                 types.PromptArgument(
-                    name="options", description="The news topics of your choice", required=False
+                    name="options",
+                    description="The news topics of your choice",
+                    required=False,
                 ),
                 types.PromptArgument(
-                    name="time_from", description="The time range of the news articles you are targeting, time_from=20220410T0130.", required=False
+                    name="time_from",
+                    description="The time range of the news articles you are targeting, time_from=20220410T0130.",
+                    required=False,
                 ),
                 types.PromptArgument(
-                    name="time_to", description="The time range of the news articles you are targeting. time_to=20230410T0130", required=False
+                    name="time_to",
+                    description="The time range of the news articles you are targeting. time_to=20230410T0130",
+                    required=False,
                 ),
                 types.PromptArgument(
-                    name="sort", description="Sort by (latest or oldest). Default sort=LATEST", required=False
+                    name="sort",
+                    description="Sort by (latest or oldest). Default sort=LATEST",
+                    required=False,
                 ),
                 types.PromptArgument(
-                    name="limit", description="Limit the number of news articles returned. Default=50", required=False
+                    name="limit",
+                    description="Limit the number of news articles returned. Default=50",
+                    required=False,
                 ),
             ],
         ),
@@ -301,7 +311,9 @@ def prompts_definitions() -> list[Prompt]:
                     name="symbol", description="Stock symbol", required=True
                 ),
                 types.PromptArgument(
-                    name="quarter", description="Fiscal quarket in the format YYYYQM", required=True
+                    name="quarter",
+                    description="Fiscal quarket in the format YYYYQM",
+                    required=True,
                 ),
             ],
         ),
@@ -315,11 +327,15 @@ def prompts_definitions() -> list[Prompt]:
             description="Fetch exchange rate",
             arguments=[
                 types.PromptArgument(
-                    name="from_currency", description="The currency you would like to get the exchange rate for.", required=True
+                    name="from_currency",
+                    description="The currency you would like to get the exchange rate for.",
+                    required=True,
                 ),
                 types.PromptArgument(
-                    name="to_currency", description="The destination currency for the exchange rate", required=True
-                )
+                    name="to_currency",
+                    description="The destination currency for the exchange rate",
+                    required=True,
+                ),
             ],
         ),
         types.Prompt(
@@ -363,21 +379,31 @@ def prompts_definitions() -> list[Prompt]:
             description="Fetch intraday time series (timestamp, open, high, low, close, volume) of the cryptocurrency specified",
             arguments=[
                 types.PromptArgument(
-                    name="symbol", description="The digital/crypto currency", required=True
+                    name="symbol",
+                    description="The digital/crypto currency",
+                    required=True,
                 ),
                 types.PromptArgument(
-                    name="market", description="The exchange market of your choice", required=True
+                    name="market",
+                    description="The exchange market of your choice",
+                    required=True,
                 ),
                 types.PromptArgument(
-                    name="interval", description="Time interval between two consecutive data points in the time series. "
-                                                 "The following values are supported: 1min, 5min, 15min, 30min, 60min", required=True
+                    name="interval",
+                    description="Time interval between two consecutive data points in the time series. "
+                    "The following values are supported: 1min, 5min, 15min, 30min, 60min",
+                    required=True,
                 ),
                 types.PromptArgument(
-                    name="datatype", description="Data type (json or csv). Default is json", required=False
+                    name="datatype",
+                    description="Data type (json or csv). Default is json",
+                    required=False,
                 ),
                 types.PromptArgument(
-                    name="outputsize", description="Output size (compact or full)", required=False
-                )
+                    name="outputsize",
+                    description="Output size (compact or full)",
+                    required=False,
+                ),
             ],
         ),
         types.Prompt(
@@ -514,23 +540,35 @@ def prompts_definitions() -> list[Prompt]:
                     name="symbol", description="Stock symbol", required=True
                 ),
                 types.PromptArgument(
-                    name="interval", description="Time interval between two consecutive data points in the time series. "
-                                                 "The following values are supported: 1min, 5min, 15min, 30min, 60min, daily, weekly, monthly", required=True
+                    name="interval",
+                    description="Time interval between two consecutive data points in the time series. "
+                    "The following values are supported: 1min, 5min, 15min, 30min, 60min, daily, weekly, monthly",
+                    required=True,
                 ),
                 types.PromptArgument(
-                    name="month", description="ONLY applicable to intraday intervals (1min, 5min, 15min, 30min, and 60min) for the equity markets.  For example, month=2009-01", required=False
+                    name="month",
+                    description="ONLY applicable to intraday intervals (1min, 5min, 15min, 30min, and 60min) for the equity markets.  For example, month=2009-01",
+                    required=False,
                 ),
                 types.PromptArgument(
-                    name="time_period", description="Number of data points used to calculate each moving average value. E.g, time_period=60", required=True
+                    name="time_period",
+                    description="Number of data points used to calculate each moving average value. E.g, time_period=60",
+                    required=True,
                 ),
                 types.PromptArgument(
-                    name="series_type", description="The desired price type in the time series. Four types are supported: close, open, high, low", required=True
+                    name="series_type",
+                    description="The desired price type in the time series. Four types are supported: close, open, high, low",
+                    required=True,
                 ),
                 types.PromptArgument(
-                    name="datatype", description="Data type (json or csv). Default is json", required=False
+                    name="datatype",
+                    description="Data type (json or csv). Default is json",
+                    required=False,
                 ),
                 types.PromptArgument(
-                    name="max_data_points", description="Maximum number of data points to fetch. Default is 100", required=False
+                    name="max_data_points",
+                    description="Maximum number of data points to fetch. Default is 100",
+                    required=False,
                 ),
             ],
         ),
@@ -542,20 +580,30 @@ def prompts_definitions() -> list[Prompt]:
                     name="symbol", description="Stock symbol", required=True
                 ),
                 types.PromptArgument(
-                    name="interval", description="Time interval between two consecutive data points in the time series. "
-                                                 "The following values are supported: 1min, 5min, 15min, 30min, 60min, daily, weekly, monthly", required=True
+                    name="interval",
+                    description="Time interval between two consecutive data points in the time series. "
+                    "The following values are supported: 1min, 5min, 15min, 30min, 60min, daily, weekly, monthly",
+                    required=True,
                 ),
                 types.PromptArgument(
-                    name="month", description="ONLY applicable to intraday intervals (1min, 5min, 15min, 30min, and 60min) for the equity markets.  For example, month=2009-01", required=False
+                    name="month",
+                    description="ONLY applicable to intraday intervals (1min, 5min, 15min, 30min, and 60min) for the equity markets.  For example, month=2009-01",
+                    required=False,
                 ),
                 types.PromptArgument(
-                    name="time_period", description="Number of data points used to calculate each moving average value. E.g, time_period=60", required=True
+                    name="time_period",
+                    description="Number of data points used to calculate each moving average value. E.g, time_period=60",
+                    required=True,
                 ),
                 types.PromptArgument(
-                    name="series_type", description="The desired price type in the time series. Four types are supported: close, open, high, low", required=True
+                    name="series_type",
+                    description="The desired price type in the time series. Four types are supported: close, open, high, low",
+                    required=True,
                 ),
                 types.PromptArgument(
-                    name="datatype", description="Data type (json or csv). Default is json", required=False
+                    name="datatype",
+                    description="Data type (json or csv). Default is json",
+                    required=False,
                 ),
             ],
         ),
@@ -921,7 +969,9 @@ def prompts_definitions() -> list[Prompt]:
                     name="time_period", description="Time period", required=True
                 ),
                 types.PromptArgument(
-                    name="series_type", description="The desired price type in the time series. Four types are supported: close, open, high, low", required=True
+                    name="series_type",
+                    description="The desired price type in the time series. Four types are supported: close, open, high, low",
+                    required=True,
                 ),
             ],
         ),
@@ -999,7 +1049,9 @@ def prompts_definitions() -> list[Prompt]:
                     name="time_period", description="Time period", required=True
                 ),
                 types.PromptArgument(
-                    name="series_type", description="The desired price type in the time series. Four types are supported: close, open, high, low", required=True
+                    name="series_type",
+                    description="The desired price type in the time series. Four types are supported: close, open, high, low",
+                    required=True,
                 ),
             ],
         ),

@@ -124,6 +124,58 @@ Options:
 - `--port`: Specify the port for the Streamable HTTP server (default: 8080)
 - `--oauth`: Enable OAuth 2.1 authentication (requires `--server http`)
 
+## 📊 Telemetry
+
+The AlphaVantage MCP server includes optional Prometheus metrics for monitoring and observability.
+
+### Enabling Telemetry
+
+Set the following environment variables to enable telemetry:
+
+```bash
+# Enable telemetry (default: true)
+export MCP_TELEMETRY_ENABLED=true
+
+# Server identification (optional)
+export MCP_SERVER_NAME=alphavantage
+export MCP_SERVER_VERSION=1.0.0
+
+# Metrics server port (default: 9464)
+export MCP_METRICS_PORT=9464
+```
+
+### Metrics Endpoint
+
+When telemetry is enabled, Prometheus metrics are available at:
+
+```
+http://localhost:9464/metrics
+```
+
+### Available Metrics
+
+The server collects the following metrics for each tool call:
+
+- **`mcp_tool_calls_total`** - Total number of tool calls (labeled by tool and outcome)
+- **`mcp_tool_latency_seconds`** - Tool execution latency histogram
+- **`mcp_tool_request_bytes`** - Request payload size histogram
+- **`mcp_tool_response_bytes`** - Response payload size histogram
+- **`mcp_tool_active_concurrency`** - Active concurrent tool calls gauge
+- **`mcp_tool_errors_total`** - Total errors by type (timeout, bad_input, connection, unknown)
+
+### Example Usage with Telemetry
+
+```bash
+# Start server with telemetry enabled
+export MCP_TELEMETRY_ENABLED=true
+export MCP_SERVER_NAME=alphavantage-prod
+export ALPHAVANTAGE_API_KEY=your_api_key
+alphavantage --server http --port 8080
+
+# View metrics
+curl http://localhost:9464/metrics
+```
+
 ## 🚀 AWS Serverless Deployment
 
 Deploy the AlphaVantage MCP Server on AWS Lambda using the stateless MCP pattern for production-ready, scalable deployment.

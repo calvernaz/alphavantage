@@ -25,7 +25,7 @@ class MCPClient:
         )
 
     async def connect_to_server(
-            self, server_protocol: Literal["sse", "streamable-http"]
+        self, server_protocol: Literal["sse", "streamable-http"]
     ):
         """Connect to an MCP server"""
         if server_protocol == "sse":
@@ -67,7 +67,7 @@ class MCPClient:
             model=self.client.models.list().data[0].id,
             messages=messages,
             tools=available_tools,
-            tool_choice="auto"
+            tool_choice="auto",
         )
 
         # Process response and handle tool calls
