@@ -2318,10 +2318,10 @@ async def main(server_type='stdio', port=8080, oauth_enabled=False):
     """Main entry point with server type selection"""
     if server_type == 'http':
         if oauth_enabled:
-            print(f"Starting Streamable HTTP server with OAuth on port {port}")
+            logger.info(f"Starting Streamable HTTP server with OAuth on port {port}")
         else:
-            print(f"Starting Streamable HTTP server on port {port}")
+            logger.info(f"Starting Streamable HTTP server on port {port}")
         await run_streamable_http_server(port=port, oauth_enabled=oauth_enabled)
     else:
-        print("Starting stdio server")
+        logger.info("Starting stdio server")
         await run_stdio_server()
