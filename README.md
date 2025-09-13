@@ -14,10 +14,33 @@ A MCP server for the stock market data API, Alphavantage API.
 2. Add the API key to your environment variables as `ALPHAVANTAGE_API_KEY`
 
 
-## Clone the project
+## Installation
+
+### Option 1: Using uvx (Recommended)
+
+The easiest way to use the AlphaVantage MCP server is with `uvx`:
+
+```bash
+# Run directly without installation
+uvx alphavantage-mcp
+
+# Or with specific arguments
+uvx alphavantage-mcp --server http --port 8080
+```
+
+### Option 2: Using pip
+
+```bash
+pip install alphavantage-mcp
+alphavantage-mcp
+```
+
+### Option 3: From source
 
 ```bash
 git clone https://github.com/calvernaz/alphavantage.git
+cd alphavantage
+uv run alphavantage
 ```
 
 ## Server Modes
@@ -198,9 +221,26 @@ export ALPHAVANTAGE_API_KEY=your_api_key_here
 **📖 Full Documentation:** See [AWS Deployment Guide](deploy/aws-stateless-mcp-lambda/README.md) for complete setup instructions, testing, monitoring, and troubleshooting.
 
 ### Usage with Claude Desktop
+
+#### Option 1: Using uvx (Recommended)
 Add this to your `claude_desktop_config.json`:
 
-**NOTE** Make sure you replace the `<DIRECTORY-OF-CLONED-PROJECT>` with the directory of the cloned project.
+```json
+{
+  "mcpServers": {
+    "alphavantage": {
+      "command": "uvx",
+      "args": ["alphavantage-mcp"],
+      "env": {
+        "ALPHAVANTAGE_API_KEY": "YOUR_API_KEY_HERE"
+      }
+    }
+  }
+}
+```
+
+#### Option 2: From source
+If you cloned the repository, use this configuration:
 
 ```json
 {
@@ -220,8 +260,24 @@ Add this to your `claude_desktop_config.json`:
   }
 }
 ```
-### Running the Server in Streamable HTTP Mode
+#### Running the Server in Streamable HTTP Mode
 
+**Using uvx:**
+```json
+{
+  "mcpServers": {
+    "alphavantage": {
+      "command": "uvx",
+      "args": ["alphavantage-mcp", "--server", "http", "--port", "8080"],
+      "env": {
+        "ALPHAVANTAGE_API_KEY": "YOUR_API_KEY_HERE"
+      }
+    }
+  }
+}
+```
+
+**From source:**
 ```json
 {
   "mcpServers": {
@@ -253,7 +309,44 @@ Watch a quick demonstration of the Alpha Vantage MCP Server in action:
 [![Alpha Vantage MCP Server Demo](https://github.com/user-attachments/assets/bc9ecffb-eab6-4a4d-bbf6-9fc8178f15c3)](https://github.com/user-attachments/assets/bc9ecffb-eab6-4a4d-bbf6-9fc8178f15c3)
 
 
+## 🔧 Development & Publishing
+
+### Publishing to PyPI
+
+This project includes scripts for publishing to PyPI and TestPyPI:
+
+```bash
+# Publish to TestPyPI (for testing)
+python scripts/publish.py --test
+
+# Publish to PyPI (production)
+python scripts/publish.py
+
+# Use uv publish instead of twine
+python scripts/publish.py --test --use-uv
+```
+
+The script uses `twine` by default (recommended) but can also use `uv publish` with the `--use-uv` flag.
+
+### GitHub Actions
+
+The repository includes a GitHub Actions workflow for automated publishing:
+
+- **Trusted Publishing**: Uses PyPA's official publish action with OpenID Connect
+- **Manual Trigger**: Can be triggered manually with options for TestPyPI vs PyPI
+- **Twine Fallback**: Supports both trusted publishing and twine-based publishing
+
+To set up publishing:
+
+1. **For Trusted Publishing** (recommended):
+   - Configure trusted publishing on PyPI/TestPyPI with your GitHub repository
+   - No secrets needed - uses OpenID Connect
+
+2. **For Token-based Publishing**:
+   - Add `PYPI_API_TOKEN` and `TEST_PYPI_API_TOKEN` secrets to your repository
+   - Use the "Use twine" option in the workflow dispatch
+
 ## 🤝 Contributing
 
-We welcome contributions from the community! To get started, check out our [contribution](CONTRIBUTING.md) guide for setup instructions, 
+We welcome contributions from the community! To get started, check out our [contribution](CONTRIBUTING.md) guide for setup instructions,
 development tips, and guidelines.

@@ -1,27 +1,39 @@
 [project]
-name = "alphavantage"
-version = "0.3.21"
-description = "Alphavantage MCP server"
+name = "alphavantage-mcp"
+version = "0.3.23"
+description = "AlphaVantage MCP server - Financial data tools for Model Context Protocol"
 readme = "README.md"
 requires-python = ">=3.12"
+keywords = ["mcp", "alphavantage", "financial", "stocks", "api", "server"]
+license = {text = "MIT"}
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business :: Financial",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
 dependencies = [
-    "bump2version>=1.0.1",
-    "load-dotenv>=0.1.0",
     "mcp>=1.9.4",
-    "toml>=0.10.2",
+    "httpx>=0.28.1",
     "starlette>=0.47.2",
     "uvicorn>=0.32.1",
-    "pytest-asyncio>=0.24.0",
-    "openai>=1.58.1",
     "PyJWT>=2.10.1",
-    "httpx>=0.28.1",
-    "requests>=2.32.0",
-
     "prometheus-client>=0.20.0",
+    "toml>=0.10.2",
+    "packaging>=21.0",
 ]
 [[project.authors]]
 name = "Cesar Alvernaz"
 email = "cesar.alvernaz@gmail.com"
+
+[project.urls]
+Homepage = "https://github.com/calvernaz/alphavantage"
+Repository = "https://github.com/calvernaz/alphavantage"
+Issues = "https://github.com/calvernaz/alphavantage/issues"
+Documentation = "https://github.com/calvernaz/alphavantage#readme"
 
 
 [build-system]
@@ -36,7 +48,9 @@ dev = [
     "pytest>=8.4.1",
     "pytest-asyncio>=0.24.0",
     "ruff>=0.9.9",
+    "build>=1.0.0",
+    "twine>=4.0.0",
 ]
 
 [project.scripts]
-alphavantage = "alphavantage_mcp_server:main"
+alphavantage-mcp = "alphavantage_mcp_server:main"
