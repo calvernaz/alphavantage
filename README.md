@@ -7,6 +7,8 @@ A MCP server for the stock market data API, Alphavantage API.
 
 **MCP Server URL**: https://mcp.alphavantage.co
 
+**PyPi**: https://pypi.org/project/alphavantage-mcp/
+
 ## Configuration
 
 ### Getting an API Key
