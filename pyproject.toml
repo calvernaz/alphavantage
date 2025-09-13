@@ -1,6 +1,6 @@
 [project]
 name = "alphavantage-mcp"
-version = "0.3.23"
+version = "0.3.24"
 description = "AlphaVantage MCP server - Financial data tools for Model Context Protocol"
 readme = "README.md"
 requires-python = ">=3.12"
