@@ -1,10 +1,10 @@
 import asyncio
 import json
 import logging
+from importlib.metadata import version, PackageNotFoundError
 
 import mcp.server.stdio
 import mcp.types as types
-import toml
 import uvicorn
 from mcp.server import NotificationOptions, Server
 from mcp.server.models import InitializationOptions
@@ -2151,9 +2151,12 @@ async def handle_call_tool(
 
 
 def get_version():
-    with open("pyproject.toml", "r") as f:
-        pyproject = toml.load(f)
-        return pyproject["project"]["version"]
+    """Get the package version from installed metadata."""
+    try:
+        return version("alphavantage-mcp")
+    except PackageNotFoundError:
+        # Fallback version if package is not installed (e.g., during development)
+        return "0.0.0-dev"
 
 
 async def run_stdio_server():
