@@ -5,6 +5,10 @@
 
 A MCP server for the stock market data API, Alphavantage API.
 
+<a href="https://glama.ai/mcp/servers/@calvernaz/alphavantage">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/@calvernaz/alphavantage/badge" alt="Alpha Vantage Server MCP server" />
+</a>
+
 **MCP Server URL**: https://mcp.alphavantage.co
 
 **PyPi**: https://pypi.org/project/alphavantage-mcp/
